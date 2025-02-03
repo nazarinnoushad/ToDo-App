@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Todo from './components/Todo';
+import EditForm from './components/EditForm'
 const localData = ()=>{
   let list = localStorage.getItem("data")
   if (list){
@@ -60,6 +61,31 @@ const doneTask = (id) => {
   }))
   
 }
+
+// Edit Task
+
+const editTask = (id)=>{
+  settodoList(todoList.map((item)=>{
+    return item.id ===id?{...item,
+      isEditing : !item.isEditing
+    }:item
+  } ))
+}
+
+// Update Task
+
+const updateTask = (modifiedTask,id)=>{
+  settodoList(
+    todoList.map((item)=>{
+      return item.id === id 
+      ?{ ...item, taskName: modifiedTask, isEditing:!item.isEditing}
+      :item;
+    })
+  )
+}
+
+
+
   return (
 <div className="p-4 min-h-screen flex flex-col  items-center bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% pt-28">
       <div className="font-bold text-3xl">TO-Do</div>
@@ -72,16 +98,20 @@ const doneTask = (id) => {
         </button>
       </form>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-10 ">
-        {
-         todoList.map((item) => {
-          return (
-            <Todo item ={item} key={item.id} deleteTask={deleteTask}
-            doneTask={doneTask}/>
-            
-            
-          )
-         })  
-        }
+      {todoList.map((item, index) => {
+  return item.isEditing ? (
+    <EditForm item={item} key={item.id} updateTask={updateTask} />
+  ) : (
+    <Todo
+      item={item}
+      key={item.id}
+      deleteTask={deleteTask}
+      doneTask={doneTask}
+      index={index}
+      editTask={editTask}
+    />
+  );
+})}
       </div>
     </div> 
   )
